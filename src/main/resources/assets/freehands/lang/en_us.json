@@ -1,0 +1,17 @@
+{
+  "key.freehands.freehands": "Move Held Item to Inventory",
+  "key.categories.freehands": "FreeHands",
+
+  "freehands.configuration.title": "FreeHands Config",
+  "freehands.configuration.section.freehands-client.toml": "Client Configuration",
+  "freehands.configuration.section.freehands-client.toml.title": "Client Configuration",
+  "freehands.configuration.section.freehands-server.toml": "Server Configuration",
+  "freehands.configuration.section.freehands-server.toml.title": "Server Configuration",
+
+  "freehands.configuration.preferOffhand": "Prefer Offhand First",
+  "freehands.configuration.ignoreHotbar": "Ignore Hotbar Slots",
+  "freehands.configuration.clientDebug": "Enable Client Debug Logging",
+  "freehands.configuration.debug": "Enable Server Debug Logging",
+
+  "freehands.message.inventory_full": "Inventory Full"
+}
