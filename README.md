@@ -8,7 +8,7 @@ Due to the way this is implemented, it sadly is not clientside. It needs to be o
 
 I have not had a chance to test it on an external dedicated server yet, but it was made with multiplayer in mind.
 
-This is my first published mod, so there may be a few rough edges. I have tested it in my modded ATM10 6.6 world and have not encountered any issues.
+This is my first published mod, so there may be a few rough edges. I have tested it in my modded ATM10 6.6 world and have not encountered any issues. I am learning along the way while working on this and other smaller projects
 
 Please let me know if you run into any problems, and if it works well in multiplayer. Feedback on how to improve the current features or the implementation is encouraged!
 
@@ -49,13 +49,27 @@ For multiplayer, this mod must be installed on both the client and the server.
 
 ## Implementation Details
 
-This mod has a client-side keybind, but the actual inventory change is done on the server. This avoids the common multiplayer issue where the client appears to move an item locally, then the server corrects it back.
+FreeHands uses a client-side keybind, but the actual inventory change is performed on the server. This avoids the issue where the client appears to move an item locally, then the server corrects it back.
 
-Before sending the request, the client runs the move logic in simulation mode. If the simulation says there is nowhere valid for the item to go, no packet is sent and the player gets an inventory-full message instead.
-
-The packet only sends the two settings needed for the move:
+When the keybind is pressed, the client creates a small preferences snapshot from the current client config as a Java record:
 
 - `preferOffhand`
 - `ignoreHotbar`
+- `tryOtherHand`
 
-Hand preference is handled as a simple two-step check: preferred hand first, then the other hand if the preferred hand is empty.
+The client first runs the same move logic in simulation mode. If the simulation finds no valid move, no packet is sent and the player gets an inventory-full message instead. This is to ensure the server does not receive useless packets for something that can be checked client-side.
+
+If the simulation succeeds, the client sends their preferences to the server as a record class. The server then checks the player’s real inventory and performs the move authoritatively.
+
+Hand preference works like this:
+
+- Normally, this mod tries the preferred hand first.
+- If the preferred hand is empty, it tries the other hand.
+- If the preferred hand moves at all, even partially, FreeHands stops and does not touch the other hand.
+- If `tryOtherHand` is enabled, FreeHands may also try the other hand when the preferred hand has an item but cannot be moved, for stacking only.
+
+Inventory destination order:
+
+- Main inventory is checked first.
+- If hotbar destinations are enabled, the hotbar is checked afterwards.
+- The currently selected hotbar slot is not used as an empty destination unless `tryOtherHand` is enabled, then it will consider it only for stacking. (if you hold 32 cobble on each hand, it will merge the stacks, essentially)
